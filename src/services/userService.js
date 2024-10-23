@@ -144,23 +144,23 @@ let updateUserData = (data) => {
 };
 
 // Update user password
-let updatePasswordUserData = (data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let user = await User.findOne({ email: data.email }).exec();
-            if (user) {
-                let hashPassword = await bcrypt.hash(data.password, salt);
-                user.password = hashPassword;
-                await user.save();
-                resolve({ errCode: 0, errMessage: 'Password updated successfully' });
-            } else {
-                resolve({ errCode: 1, errMessage: 'User not found' });
-            }
-        } catch (error) {
-            reject(error);
-        }
-    });
-};
+let updatePasswordUserData = async (data) => {
+    try {
+      let user = await User.findOne({ email: data.email }).exec();
+      if (user) {
+        user.password = data.password;
+        await user.save();
+        return { errCode: 0, errMessage: 'Password updated successfully' };
+      } else {
+        return { errCode: 1, errMessage: 'User not found' };
+      }
+    } catch (error) {
+      console.error(error);
+      return { errCode: 2, errMessage: 'An error occurred' };
+    }
+  };
+  
+  
 
 module.exports = {
     handleUserLogin,

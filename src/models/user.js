@@ -11,18 +11,15 @@ const userSchema = new mongoose.Schema({
     roleId: { type: String },
 }, { timestamps: true });
 
-// Middleware to hash the password before saving the user
 userSchema.pre('save', async function (next) {
     const user = this;
 
-    // Only hash the password if it has been modified (or is new)
+
     if (!user.isModified('password')) return next();
 
     try {
-        // Generate a salt
         const salt = await bcrypt.genSalt(10);
 
-        // Hash the password using the salt
         user.password = await bcrypt.hash(user.password, salt);
 
         next();

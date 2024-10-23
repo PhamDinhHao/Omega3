@@ -150,6 +150,7 @@ let initWebRoutes = (app) => {
   router.post("/verify-otp", async (req, res) => {
     try {
       const { email, otp } = req.body;
+      console.log(email ,otp );
       const result = await read_confirm_otp(email, otp);
       if (result.success === true) {
         await deleteExpiredRecordNow(email);
@@ -224,6 +225,7 @@ let initWebRoutes = (app) => {
     stockController.createNewStockCheckDetail
   );
   router.get("/api/get-all-stock-check", stockController.getAllStockChecks);
+  router.delete("/api/delete-stock-check", stockController.handleDeleteSock);
   return app.use("/", router);
 };
 module.exports = initWebRoutes;

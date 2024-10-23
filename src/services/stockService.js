@@ -26,10 +26,9 @@ let getAllStockChecks = (stockCheckId) => {
   });
 };
 
-// Create a new stock check
 const createNewStockCheck = async (data) => {
   try {
-    // Create a new stock check in MongoDB
+    console.log(data);
     const newStockCheck = await StockCheck.create({
       checkDate: data.checkDate,
       totalActualQuantity: data.totalActualQuantity,
@@ -82,9 +81,30 @@ const createNewStockCheckDetail = async (data) => {
     };
   }
 };
-
+let deleteStock = (stockId) => {
+  return new Promise(async (resolve, reject) => {
+      try {
+          const stock = await StockCheck.findById(stockId).exec();
+          if (!stock) {
+              resolve({
+                  errCode: 2,
+                  errMessage: `The supplier doesn't exist`,
+              });
+          } else {
+              await StockCheck.findByIdAndDelete(stockId);
+              resolve({
+                  errCode: 0,
+                  errMessage: `The supplier was deleted`,
+              });
+          }
+      } catch (error) {
+          reject(error);
+      }
+  });
+};
 module.exports = {
   createNewStockCheck,
   createNewStockCheckDetail,
   getAllStockChecks,
+  deleteStock
 };

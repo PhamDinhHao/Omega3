@@ -179,21 +179,33 @@ const getStartDate = () => {
 
 let getTotalPurchasesByDay = async () => {
   try {
-    const startDate = getStartDate();
-    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7);
 
-    const totalPurchasesByDay = await Purchase.aggregate([
-      { $match: { purchaseDate: { $gte: startDate, $lte: endDate } } },
-      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } }, total: { $sum: "$total" } } },
-      { $sort: { "_id": 1 } },
+    const purchaseByDay = await Purchase.aggregate([
+      {
+        $match: { purchaseDate: { $gte: startDate } },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
+          totalPurchases: { $sum: "$total" },
+        },
+      },
+      { $sort: { _id: 1 } },
     ]);
 
-    const dateRange = getDateRange(startDate, endDate);
-    const result = dateRange.map((date) => {
-      const found = totalPurchasesByDay.find(purchase => purchase._id === date);
+    const dateRange = [];
+    const endDate = new Date();
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      dateRange.push(date.toISOString().split('T')[0]);
+    }
+
+    const result = dateRange.map(date => {
+      const found = purchaseByDay.find(purchase => purchase._id === date);
       return {
         date,
-        totalPurchases: found ? found.total : 0,
+        totalPurchases: found ? found.totalPurchases : 0
       };
     });
 
@@ -203,34 +215,40 @@ let getTotalPurchasesByDay = async () => {
       data: result,
     };
   } catch (error) {
-    throw error;
+    console.error("Error fetching total purchases by day:", error);
+    return {
+      errCode: 1,
+      errMessage: "Error fetching total purchases by day",
+    };
   }
-};
-
-const getCurrentMonth = () => {
-  const currentDate = new Date();
-  currentDate.setMonth(currentDate.getMonth() + 1); // Corrected to get the current month
-  return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-};
-
-const getStartDateMon = () => {
-  const currentDate = new Date();
-  currentDate.setMonth(currentDate.getMonth() - 11); // Corrected to get the starting month 11 months back
-  return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 };
 
 let getTotalPurchasesByMonth = async () => {
   try {
-    const startDate = getStartDateMon();
-    const endDate = getCurrentMonth();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 11);
 
     const totalPurchasesByMonth = await Purchase.aggregate([
-      { $match: { purchaseDate: { $gte: startDate, $lte: endDate } } },
-      { $group: { _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } }, total: { $sum: "$total" } } },
-      { $sort: { "_id": 1 } },
+      { $match: { purchaseDate: { $gte: startDate } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } },
+          total: { $sum: "$total" },
+        },
+      },
+      { $sort: { _id: 1 } },
     ]);
 
-    const dateRange = getMonthRange(startDate, endDate);
+    const dateRange = [];
+    const currentDate = new Date();
+    currentDate.setDate(1);
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      dateRange.push(date.toISOString().slice(0, 7));
+    }
+    dateRange.reverse();
+
+
     const result = dateRange.map((month) => {
       const found = totalPurchasesByMonth.find(purchase => purchase._id === month);
       return {
@@ -245,9 +263,14 @@ let getTotalPurchasesByMonth = async () => {
       data: result,
     };
   } catch (error) {
-    throw error;
+    console.error("Error fetching total purchases by month:", error);
+    return {
+      errCode: 1,
+      errMessage: "Error fetching total purchases by month",
+    };
   }
 };
+
 
 module.exports = {
   createNewPurchase: createNewPurchase,

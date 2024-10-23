@@ -17,23 +17,23 @@ const stockCheckSchema = new mongoose.Schema({
   },
   totalIncreaseQuantity: {
     type: Number,
-    required: true
+    // required: true
   },
   totalIncreaseMoney: {
     type: Number,
-    required: true
+    // required: true
   },
   totalDecreaseQuantity: {
     type: Number,
-    required: true
+    // required: true
   },
   totalDecreaseMoney: {
     type: Number,
-    required: true
+    // required: true
   },
   totalQuantityDifference: {
     type: Number,
-    required: true
+    // required: true
   },
   totalMoneyDifference: {
     type: Number,

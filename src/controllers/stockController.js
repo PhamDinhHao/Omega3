@@ -70,9 +70,20 @@ const createNewStockCheckDetail = async (req, res) => {
     });
   }
 };
-
+let handleDeleteSock = async (req, res) => {
+  if (!req.body.id) {
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing required parameters",
+      stock,
+    });
+  }
+  let message = await stockService.deleteStock(req.body.id);
+  return res.status(200).json(message);
+};
 module.exports = {
   createNewStockCheck,
   createNewStockCheckDetail,
   getAllStockChecks,
+  handleDeleteSock
 };
