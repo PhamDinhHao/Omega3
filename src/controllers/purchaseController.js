@@ -1,11 +1,21 @@
 import purchaseService from "../services/purchaseService";
 
+let handleDeletePurchase = async (req, res) => {
+  if (!req.body.id) {
+    return res.status(200).json({
+      errCode: 1,
+      message: "Missing required parameters",
+      pruchase,
+    });
+  }
+  let message = await purchaseService.deletePurchase(req.body.id);
+  return res.status(200).json(message);
+};
 let handleCreateNewPurchase = async (req, res) => {
   let message = await purchaseService.createNewPurchase(req.body);
 
   return res.status(200).json(message);
 };
-
 let handleCreateNewPurchaseDetail = async (req, res) => {
   try {
     const requestData = req.body;
@@ -80,5 +90,6 @@ module.exports = {
   handleGetAllPurchase: handleGetAllPurchase,
   handleEditPurchaseAndDetails: handleEditPurchaseAndDetails,
   getTotalPurchasesByDay: getTotalPurchasesByDay,
-  getTotalPurchasesByMonth: getTotalPurchasesByMonth
+  getTotalPurchasesByMonth: getTotalPurchasesByMonth,
+  handleDeletePurchase
 };

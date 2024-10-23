@@ -1,15 +1,14 @@
 import { request } from "express";
 import Customer from "../models/customer";
 
-// Get all customers or a specific customer by ID
 let getAllCustomers = (customerId) => {
   return new Promise(async (resolve, reject) => {
     try {
       let customers;
       if (customerId === "ALL") {
-        customers = await Customer.find({}); // Fetch all customers
+        customers = await Customer.find({});
       } else if (customerId) {
-        customers = await Customer.findById(customerId); // Fetch a specific customer by ID
+        customers = await Customer.findById(customerId);
       }
       resolve(customers);
     } catch (error) {
@@ -18,7 +17,6 @@ let getAllCustomers = (customerId) => {
   });
 };
 
-// Create a new customer
 let createNewCustomer = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -43,7 +41,6 @@ let createNewCustomer = (data) => {
   });
 };
 
-// Delete a customer
 let deleteCustomer = (customerId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -55,7 +52,7 @@ let deleteCustomer = (customerId) => {
           errMessage: `The customer doesn't exist`,
         });
       } else {
-        await Customer.findByIdAndDelete(customerId); // Delete the customer
+        await Customer.findByIdAndDelete(customerId);
 
         resolve({
           errCode: 0,
@@ -68,7 +65,6 @@ let deleteCustomer = (customerId) => {
   });
 };
 
-// Update customer data
 let updateCustomerData = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -108,13 +104,12 @@ let updateCustomerData = (data) => {
   });
 };
 
-// Get customer suggestions by query
 let getCustomerSuggestions = async (query) => {
   try {
     const suggestions = await Customer.find({
-      name: { $regex: query, $options: "i" }, // Case-insensitive search
+      name: { $regex: query, $options: "i" },
     })
-      .select("id name") // Include only necessary attributes
+      .select("id name")
       .limit(10);
       
     return suggestions;

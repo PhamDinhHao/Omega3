@@ -19,14 +19,13 @@ let getAllLocation = (locationId) => {
 };
 
 // Create a new location
-let createNewLocation = (data) => {
+let createNewlacation = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const newLocation = new Location({
+      const newLocation = await Location.create({
         locationName: data.locationName,
         maxWeightCapacity: data.maxWeightCapacity,
       });
-
       await newLocation.save();
       resolve({
         errCode: 0,
@@ -40,5 +39,5 @@ let createNewLocation = (data) => {
 
 module.exports = {
   getAllLocation,
-  createNewLocation,
+  createNewlacation,
 };

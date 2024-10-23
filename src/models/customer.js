@@ -1,48 +1,44 @@
 'use strict';
 const mongoose = require('mongoose');
 
-// Định nghĩa schema cho Customer model
 const customerSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true // Loại bỏ khoảng trắng thừa
+    trim: true
   },
   address: {
     type: String,
-    trim: true // Loại bỏ khoảng trắng thừa
+    trim: true
   },
   phoneNumber: {
     type: String,
-    trim: true // Loại bỏ khoảng trắng thừa
+    trim: true
   },
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'], // Giới hạn giá trị cho trường gender
+    enum: ['Nam', 'Nữ'],
   },
   birthday: {
     type: Date,
   },
   debtCustomer: {
     type: Number,
-    default: 0, // Giá trị mặc định
+    default: 0,
   }
 }, {
-  timestamps: true // Tự động quản lý `createdAt` và `updatedAt`
+  timestamps: true 
 });
 
-// Định nghĩa mối quan hệ ảo với Sale model
 customerSchema.virtual('sales', {
-  ref: 'Sale', // Tham chiếu đến model Sale
-  localField: '_id', // Trường địa phương trong Customer
-  foreignField: 'customerId' // Trường trong Sale tham chiếu đến Customer
+  ref: 'Sale',
+  localField: '_id',
+  foreignField: 'customerId'
 });
 
-// Kích hoạt các trường ảo khi chuyển đổi sang JSON hoặc Object
 customerSchema.set('toObject', { virtuals: true });
 customerSchema.set('toJSON', { virtuals: true });
 
-// Xuất model Customer
 const Customer = mongoose.model('Customer', customerSchema);
 
 module.exports = Customer;

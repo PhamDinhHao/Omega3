@@ -1,12 +1,12 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
-
+const bodyParser = require('body-parser');
 const db = require('./config/db/index');
 const route = require('./routes/web');
 
 const app = express();
-
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect

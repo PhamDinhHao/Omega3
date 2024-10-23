@@ -2,6 +2,27 @@ import Purchase from "../models/purchase"
 import Product from "../models/product"
 import PurchaseDetail from "../models/purchaseDetail"
 
+let deletePurchase = (purchaseId) => {
+  return new Promise(async (resolve, reject) => {
+      try {
+          const purchase = await Purchase.findById(purchaseId).exec();
+          if (!purchase) {
+              resolve({
+                  errCode: 2,
+                  errMessage: `The supplier doesn't exist`,
+              });
+          } else {
+              await Purchase.findByIdAndDelete(purchaseId);
+              resolve({
+                  errCode: 0,
+                  errMessage: `The supplier was deleted`,
+              });
+          }
+      } catch (error) {
+          reject(error);
+      }
+  });
+};
 let createNewPurchase = async (data) => {
   try {
     const newPurchase = await Purchase.create({
@@ -72,13 +93,9 @@ let getAllPurchase = async (purchaseId) => {
 
 let EditPurchaseAndDetails = async (purchase, purchaseDetails) => {
   try {
-    await Purchase.findByIdAndUpdate(purchase.purchaseId, {
-      supplierId: purchase.supplierId,
-      total: purchase.total,
-    });
 
-    const existingDetails = await PurchaseDetail.find({ purchaseId: purchase.purchaseId });
-
+    await Purchase.updateOne({ _id: purchase.purchaseId }, { supplierId: purchase.supplierId, total: purchase.total });
+    const existingDetails = await PurchaseDetail.find({ purchaseId: purchase.purchaseId }).lean();
     const existingDetailMap = {};
     existingDetails.forEach((detail) => {
       existingDetailMap[detail.productId] = detail;
@@ -239,4 +256,5 @@ module.exports = {
   EditPurchaseAndDetails: EditPurchaseAndDetails,
   getTotalPurchasesByDay: getTotalPurchasesByDay,
   getTotalPurchasesByMonth: getTotalPurchasesByMonth,
+  deletePurchase
 };

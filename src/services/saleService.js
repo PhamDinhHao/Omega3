@@ -2,8 +2,28 @@ import Sale from '../models/sale';
 import SaleDetail from '../models/saleDetail';
 import Product from '../models/product';
 import Customer from '../models/customer'; // Assuming you have a Customer model
-
 // Create a new sale
+let deleteSale = (saleId) => {
+  return new Promise(async (resolve, reject) => {
+      try {
+          const sale = await Sale.findById(saleId).exec();
+          if (!sale) {
+              resolve({
+                  errCode: 2,
+                  errMessage: `The supplier doesn't exist`,
+              });
+          } else {
+              await Sale.findByIdAndDelete(saleId);
+              resolve({
+                  errCode: 0,
+                  errMessage: `The supplier was deleted`,
+              });
+          }
+      } catch (error) {
+          reject(error);
+      }
+  });
+};
 let createNewSale = async (data) => {
   try {
     const newSale = await Sale.create({
@@ -193,12 +213,12 @@ let getAllSale = async (saleId) => {
 };
 
 // Edit a sale and its details
-let EditSaleAndDetails = async (Sale, SaleDetails) => {
+let EditSaleAndDetails = async (sale, saleDetails) => {
   try {
     // Update Sale
-    await Sale.updateOne({ _id: Sale.saleId }, { customerId: Sale.customerIdId, total: Sale.total });
+    await Sale.updateOne({ _id: sale.saleId }, { customerId: sale.customerId, total: sale.total });
 
-    const existingDetails = await SaleDetail.find({ saleId: Sale.saleId }).lean();
+    const existingDetails = await SaleDetail.find({ saleId: sale.saleId }).lean();
 
     const detailsToUpdate = [];
     const detailsToCreate = [];
@@ -207,7 +227,7 @@ let EditSaleAndDetails = async (Sale, SaleDetails) => {
     const existingDetailMap = new Map(existingDetails.map(detail => [detail.productId.toString(), detail]));
 
     // Identify details to update, create, or delete
-    for (let detail of SaleDetails) {
+    for (let detail of saleDetails) {
       if (existingDetailMap.has(detail.productId)) {
         const existingDetail = existingDetailMap.get(detail.productId);
         detailsToUpdate.push({ ...detail, oldQuantity: existingDetail.quantity, id: existingDetail._id });
@@ -256,5 +276,5 @@ let EditSaleAndDetails = async (Sale, SaleDetails) => {
   }
 };
 module.exports = {
-    EditSaleAndDetails,getAllSale,getTotalSalesByMonth,getTotalSalesByDay,createNewSaleDetail,createNewSale
+  EditSaleAndDetails,getAllSale,getTotalSalesByMonth,getTotalSalesByDay,createNewSaleDetail,createNewSale,deleteSale
   };

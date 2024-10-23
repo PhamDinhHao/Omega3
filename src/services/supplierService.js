@@ -39,7 +39,6 @@ let createNewSupplier = (data) => {
     });
 };
 
-// Delete a supplier
 let deleteSupplier = (supplierId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -50,7 +49,7 @@ let deleteSupplier = (supplierId) => {
                     errMessage: `The supplier doesn't exist`,
                 });
             } else {
-                await supplier.remove(); // Use remove() to delete the document
+                await Supplier.findByIdAndDelete(supplierId);
                 resolve({
                     errCode: 0,
                     errMessage: `The supplier was deleted`,
@@ -62,7 +61,6 @@ let deleteSupplier = (supplierId) => {
     });
 };
 
-// Update supplier data
 let updateSupplierData = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -97,11 +95,10 @@ let updateSupplierData = (data) => {
     });
 };
 
-// Get supplier suggestions by name (like query)
 let getSupplierSuggestions = async (query) => {
     try {
         const suggestions = await Supplier.find({
-            name: { $regex: query, $options: 'i' } // Case-insensitive search
+            name: { $regex: query, $options: 'i' }
         }).select('id name').exec();
         return suggestions;
     } catch (error) {

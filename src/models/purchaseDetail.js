@@ -23,7 +23,7 @@ const purchaseDetailSchema = new mongoose.Schema({
   },
   salePrice: {
     type: Number,
-    required: true
+    // required: true
   },
   total: {
     type: Number,

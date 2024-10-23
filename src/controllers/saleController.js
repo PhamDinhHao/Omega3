@@ -1,5 +1,17 @@
 import saleService from "../services/saleService";
 
+let handleDeleteSale = async (req, res) => {
+    if (!req.body.id) {
+      return res.status(200).json({
+        errCode: 1,
+        message: "Missing required parameters",
+        sale,
+      });
+    }
+    let message = await saleService.deleteSale(req.body.id);
+    return res.status(200).json(message);
+  };
+
 let handleCreateNewSale = async (req, res) => {
     let message = await saleService.createNewSale(req.body);
 
@@ -36,6 +48,7 @@ let handleGetAllSale = async (req, res) => {
 let handleEditSaleAndDetails = async (req, res) => {
     try {
         const { Sale, SaleDetails } = req.body;
+
         // console.log("Received data:", { Sale, SaleDetails });
         let response = await saleService.EditSaleAndDetails(
             Sale,
@@ -81,4 +94,5 @@ module.exports = {
     getTotalSalesByMonth: getTotalSalesByMonth,
     handleGetAllSale: handleGetAllSale,
     handleEditSaleAndDetails: handleEditSaleAndDetails,
+    handleDeleteSale
 };

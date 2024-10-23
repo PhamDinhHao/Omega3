@@ -20,11 +20,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  supplierId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Supplier', // Reference to Supplier model
-    required: true
-  },
+  // supplierId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Supplier', // Reference to Supplier model
+  //   required: true
+  // },
   unitId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Unit', // Reference to Unit model

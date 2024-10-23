@@ -7,20 +7,19 @@ import Location from "../models/location";
 import PurchaseDetail from "../models/purchaseDetail";
 import SaleDetail from "../models/saleDetail";
 
-// Get all products or a specific product by ID
 let getAllProducts = (productId) => {
   return new Promise(async (resolve, reject) => {
     try {
       let products;
       if (productId === "ALL") {
         products = await Product.find({})
-          .populate("supplierId", "name")
+          // .populate("supplierId", "name")
           .populate("categoryId", "categoryName")
           .populate("unitId", "unitName")
           .populate("locationId", "locationName");
       } else {
         products = await Product.findById(productId)
-          .populate("supplierId", "name")
+          // .populate("supplierId", "name")
           .populate("categoryId", "categoryName")
           .populate("unitId", "unitName")
           .populate("locationId", "locationName");
@@ -32,7 +31,6 @@ let getAllProducts = (productId) => {
   });
 };
 
-// Get sold products data
 const handleGetProductDoneSale = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -51,7 +49,6 @@ const handleGetProductDoneSale = () => {
   });
 };
 
-// Create a new product
 let createNewProduct = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -59,7 +56,7 @@ let createNewProduct = (data) => {
         productName: data.productName,
         categoryId: data.selectedCategory.value,
         locationId: data.selectedLocation.value,
-        supplierId: data.selectedSupplier.value,
+        // supplierId: data.selectedSupplier.value,
         unitId: data.selectedUnit.value,
         image: data.image,
         quantity: data.quantity,
@@ -76,7 +73,6 @@ let createNewProduct = (data) => {
   });
 };
 
-// Delete a product
 let deleteProduct = (productId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -84,7 +80,7 @@ let deleteProduct = (productId) => {
       if (!product) {
         resolve({ errCode: 2, errMessage: "Product not found" });
       } else {
-        await product.remove();
+        await Product.findByIdAndDelete(productId);
         resolve({ errCode: 0, errMessage: "Product deleted successfully" });
       }
     } catch (error) {
@@ -93,19 +89,17 @@ let deleteProduct = (productId) => {
   });
 };
 
-// Update product data
 let updateProductData = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.id) {
         resolve({ errCode: 2, errMessage: "Missing required parameters" });
       }
-
       const product = await Product.findById(data.id);
       if (product) {
         product.productName = data.productName;
         product.categoryId = data.selectedCategory.value;
-        product.supplierId = data.selectedSupplier.value;
+        product.locationId = data.selectedLocation.value;
         product.unitId = data.selectedUnit.value;
         product.image = data.image;
         product.quantity = data.quantity;
@@ -123,7 +117,6 @@ let updateProductData = (data) => {
   });
 };
 
-// Get product suggestions based on a query
 let getProductSuggestions = async (query) => {
   try {
     const suggestions = await Product.find({
@@ -135,7 +128,6 @@ let getProductSuggestions = async (query) => {
   }
 };
 
-// Get products in purchase details
 let getProductsInPurchaseDetails = async (purchaseId) => {
   try {
     const purchaseDetails = await PurchaseDetail.find({ purchaseId })
@@ -148,7 +140,7 @@ let getProductsInPurchaseDetails = async (purchaseId) => {
 
     const productIds = purchaseDetails.map((detail) => detail.productId);
     const products = await Product.find({ _id: { $in: productIds } }).select(
-      "id productName"
+      "id productName costPrice"
     );
 
     const combinedResults = purchaseDetails.map((detail) => {
@@ -162,7 +154,6 @@ let getProductsInPurchaseDetails = async (purchaseId) => {
   }
 };
 
-// Get products in sale details
 let getProductsInSaleDetails = async (saleId) => {
   try {
     const saleDetails = await SaleDetail.find({ saleId })

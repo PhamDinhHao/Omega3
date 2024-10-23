@@ -1,20 +1,32 @@
 import bcrypt from 'bcryptjs';
-import User from '../models/user'; // Assuming the User model is in the models directory
+import User from '../models/user';
 
 const salt = bcrypt.genSaltSync(10);
 
-// Handle user login
 let handleUserLogin = (email, password) => {
     return new Promise(async (resolve, reject) => {
         try {
             let userData = {};
-            let user = await User.findOne({ email }).exec();
+            email = email.trim();
+            if (!email || !password) {
+                userData.errCode = 1;
+                userData.errMessage = "Missing email or password";
+                return resolve(userData);
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                userData.errCode = 1;
+                userData.errMessage = "Invalid email format";
+                return resolve(userData);
+            }
+            let user = await User.findOne({ email });
             if (user) {
                 let check = bcrypt.compareSync(password, user.password);
                 if (check) {
                     userData.errCode = 0;
                     userData.errMessage = "Ok";
-                    userData.user = { ...user._doc, password: undefined }; // Exclude password
+                    userData.user = { ...user._doc, password: undefined }
                 } else {
                     userData.errCode = 3;
                     userData.errMessage = "Wrong password";
@@ -30,7 +42,6 @@ let handleUserLogin = (email, password) => {
     });
 };
 
-// Check if user email exists
 let checkUserEmail = (email) => {
     return new Promise(async (resolve, reject) => {
         try {

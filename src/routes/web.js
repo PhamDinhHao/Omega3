@@ -116,6 +116,7 @@ let initWebRoutes = (app) => {
     purchaseController.handleCreateNewPurchaseDetail
   );
   router.get("/api/get-all-purchase", purchaseController.handleGetAllPurchase);
+  router.delete("/api/delete-purchase", purchaseController.handleDeletePurchase);
   router.put(
     "/api/edit-purchase-and-details",
     purchaseController.handleEditPurchaseAndDetails
@@ -125,6 +126,7 @@ let initWebRoutes = (app) => {
   router.post("/api/create-new-unit", unitController.handleCreateNewUnit);
 
   router.post("/api/create-new-sale", saleController.handleCreateNewSale);
+  router.delete("/api/delete-sale", saleController.handleDeleteSale);
   router.post(
     "/api/create-new-sale-detail",
     saleController.handleCreateNewSaleDetail

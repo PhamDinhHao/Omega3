@@ -11,10 +11,6 @@ const locationSchema = new mongoose.Schema({
   maxWeightCapacity: {
     type: Number,
     required: true // Use Number for float values
-  },
-  currentWeight: {
-    type: Number,
-    required: true // Use Number for float values
   }
 }, {
   timestamps: true // Automatically manage `createdAt` and `updatedAt`
